@@ -109,12 +109,14 @@ export function register(on: On, options: PluginOptions): void {
     rootSeen = root ?? rootSeen
     let isWalkFailed = false
     // The walk, not only what was handed: the engine can withhold a project
-    // CLAUDE.md it loaded, and the project still has one.
+    // CLAUDE.md it loaded, and the project still has one. The person's
+    // ~/.claude/CLAUDE.md sits on that walk for every repo under home and
+    // does not count: the README already excludes it.
     isClaudeProject =
       root !== undefined &&
       (handed.some(file => Files.isClaudeFileOnWalk(file, root)) ||
         (await $.fs.ancestors({ names: Names.CLAUDE_NAMES }).then(
-          files => files.length > 0,
+          files => Files.hasProjectClaudeFiles(files, handed),
           () => {
             isWalkFailed = true
 
@@ -203,7 +205,10 @@ export function register(on: On, options: PluginOptions): void {
 
     isClaudeProject ??=
       isFallback &&
-      (await $.fs.ancestors({ names: Names.CLAUDE_NAMES })).length > 0
+      Files.hasProjectClaudeFiles(
+        await $.fs.ancestors({ names: Names.CLAUDE_NAMES }),
+        inContext,
+      )
     const isOutOfReach = isClaudeProject || !Frames.isBelow(read, root)
 
     if (isOutOfReach) {

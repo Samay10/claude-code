@@ -1,6 +1,7 @@
 export * from './chain-root-of.js'
 export * from './dropped-kinds.js'
 export * from './files-of.js'
+export * from './has-project-claude-files.js'
 export * from './insertion-index.js'
 export * from './is-claude-file-on-walk.js'
 export * from './is-kept-without-instructions.js'
